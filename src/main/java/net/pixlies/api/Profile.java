@@ -10,6 +10,10 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
+/**
+ * @author MickMMars
+ */
+
 @Data
 @AllArgsConstructor
 public class Profile {
@@ -48,6 +52,10 @@ public class Profile {
     private Map<String, String> punishments;
     private Map<String, Object> extras;
 
+    /**
+     * @param uuid {@link UUID} of the {@link Player}
+     * @return Profile object from the MongoDB database
+     */
     public static Profile get(UUID uuid) {
         Document profile = new Document("uniqueId", uuid.toString());
         Document found = instance.getPlayerCollection().find(profile).first();
@@ -91,13 +99,10 @@ public class Profile {
         return data;
     }
 
-    public enum scoreboardType {
 
-        STANDARD,
-        COMPACT
-
-    }
-
+    /**
+     * Save the profile in the MongoDatabase
+     */
     public void backup() {
         Document profile = new Document("uniqueId", uniqueId);
         Document found = instance.getPlayerCollection().find(profile).first();
@@ -135,24 +140,39 @@ public class Profile {
         instance.getPlayerCollection().replaceOne(found, profile);
     }
 
+    /**
+     * Save the Profile in Redis cache
+     */
     public void save() {
         instance.getRedissonClient().getBucket("profile:" + uniqueId).set(instance.getGson().toJson(this));
     }
 
+    /**
+     * @return nickname of the {@link Profile}
+     */
     public String getDisplayName() {
         if (nickname.equalsIgnoreCase("NONE") || nickname.equalsIgnoreCase(""))
             return knownUsernames.get(knownUsernames.size() -1);
         return nickname;
     }
 
+    /**
+     * @return get player as {@link OfflinePlayer}
+     */
     public OfflinePlayer getAsOfflinePlayer() {
         return instance.getPlugin().getServer().getOfflinePlayer(UUID.fromString(uniqueId));
     }
 
+    /**
+     * @return is nation leader
+     */
     public boolean isLeader() {
         return nationRank.equalsIgnoreCase("leader");
     }
 
+    /**
+     * Remove from nation.
+     */
     public void removeFromNation() {
         if (!isInNation()) return;
         this.inNation = false;
@@ -160,6 +180,12 @@ public class Profile {
         save();
     }
 
+    /**
+     * Withdraw money from the Profile
+     * @param amount transaction amount
+     * @param reason reason e.g. "Tax from nation"
+     * @return if transaction was successful
+     */
     public boolean withdrawMoney(double amount, String reason) {
         if (balance - amount < 0)
             return false;
@@ -172,6 +198,10 @@ public class Profile {
         return true;
     }
 
+    /**
+     * @param amount amount of transaction
+     * @param reason reason e.g. "Gift from Eliza"
+     */
     public void depositMoney(double amount, String reason) {
         this.balance = this.balance + amount;
         String receipt = Receipt.create(amount, false, reason);
@@ -181,12 +211,22 @@ public class Profile {
         save();
     }
 
+    /**
+     * @return if {@link Player} is online.
+     */
     public boolean isOnline() {
         return instance.getPlugin().getServer().getPlayer(UUID.fromString(uniqueId)) != null;
     }
 
+    /**
+     * @return if {@link Profile} is married.
+     */
     public boolean isMarried() { return !marriagePartner.equals("NONE"); }
 
+    /**
+     * @param uuid target {@link UUID}
+     * @return if two players are related.
+     */
     public boolean areRelated(UUID uuid) {
         if (marriagePartner.equals(uuid.toString()))
             return true;
@@ -195,14 +235,24 @@ public class Profile {
         return relations.get(uuid.toString()) == null || !relations.get(uuid.toString()).startsWith("REQ=");
     }
 
+    /**
+     * @return get as {@link Player} object.
+     */
     public Player getAsPlayer() {
         return getAsOfflinePlayer().isOnline() ? getAsOfflinePlayer().getPlayer() : null;
     }
 
+    /**
+     * @return if Discord and Minecraft are synced
+     */
     public boolean discordIsSynced() {
         return !discord.equalsIgnoreCase("NONE");
     }
 
+    /**
+     * @param discordId Discord Id (e.g. "280798475946426369")
+     * @return {@link Profile} that belongs to the Discord Id
+     */
     public static Profile getByDiscord(String discordId) {
         Document found = instance.getPlayerCollection().find(new Document("discord", discordId)).first();
         if (found != null)
@@ -210,6 +260,10 @@ public class Profile {
         return null;
     }
 
+    /**
+     * @param nickname Nickname (e.g. "Minecrafter3000")
+     * @return {@link Profile} that belongs to the nickname
+     */
     public static Profile getByNickname(String nickname) {
         Document found = instance.getPlayerCollection().find(new Document("nickname", nickname)).first();
         if (found != null)
@@ -217,11 +271,24 @@ public class Profile {
         return null;
     }
 
+    /**
+     * @return Profiles of all online players.
+     */
     public static Map<UUID, Profile> onlineProfiles() {
         Map<UUID, Profile> returner = new HashMap<>();
         for (Player player : instance.getPlugin().getServer().getOnlinePlayers())
             returner.put(player.getUniqueId(), instance.getProfile(player.getUniqueId()));
         return returner;
+    }
+
+    /**
+     * Scoreboard types
+     */
+    public enum scoreboardType {
+
+        STANDARD,
+        COMPACT
+
     }
 
 }

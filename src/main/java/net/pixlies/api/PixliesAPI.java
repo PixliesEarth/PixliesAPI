@@ -14,6 +14,10 @@ import org.redisson.config.Config;
 
 import java.util.UUID;
 
+/**
+ * @author MickMMars
+ * <h3>This is the main class, just instanciate that in your Plugin.</h3>
+ */
 public class PixliesAPI {
 
     private static @Getter PixliesAPI instance;
@@ -24,6 +28,10 @@ public class PixliesAPI {
     private @Getter Gson gson;
     private @Getter Plugin plugin;
 
+    /**
+     * @param mongoURI MongoDB URI
+     * @param plugin A bukkit {@link org.bukkit.plugin.java.JavaPlugin} instance
+     */
     public PixliesAPI(String mongoURI, Plugin plugin) {
         instance = this;
         this.plugin = plugin;
