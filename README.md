@@ -8,7 +8,7 @@ public class myPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        api = new PixliesAPI("mongodb://mongodb0.example.com:27017", this);
+        api = new PixliesAPI("mongodb://mongodb0.example.com:27017", this, "database", "users", "nations");
     }
     
     public PixliesAPI getApi() {
@@ -25,7 +25,7 @@ public class myPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        api = new PixliesAPI("mongodb://mongodb0.example.com:27017", this);
+        api = new PixliesAPI("mongodb://mongodb0.example.com:27017", this, "database", "users", "nations");
     }
     
     @EventHandler
