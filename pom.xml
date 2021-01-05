@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>net.pixlies</groupId>
     <artifactId>PixliesAPI</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>PixliesAPI</name>
@@ -40,15 +40,6 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.github.stefvanschie.inventoryframework</pattern>
-                                    <shadedPattern>eu.pixliesearth.core.lib.inventoryframework</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
