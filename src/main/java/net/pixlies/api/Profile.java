@@ -144,7 +144,7 @@ public class Profile {
      * Save the Profile in Redis cache
      */
     public void save() {
-        instance.getRedissonClient().getBucket("profile:" + uniqueId).set(instance.getGson().toJson(this));
+        instance.getJedis().set("profile:" + uniqueId, instance.getGson().toJson(this));
     }
 
     /**
